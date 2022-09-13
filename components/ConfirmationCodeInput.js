@@ -297,7 +297,8 @@ export default class ConfirmationCodeInput extends Component {
             
             }}
           onKeyPress={(e) => this._onKeyPress(e)}
-          maxLength={6}
+          //maxLength={6}
+          maxLength={codeLength}
         />
       )
     }
