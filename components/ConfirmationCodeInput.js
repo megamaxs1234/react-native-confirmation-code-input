@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { View, TextInput, StyleSheet, Dimensions,I18nManager } from 'react-native';
 import _ from 'lodash';
 
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+import { ViewPropTypes ,TextPropTypes ,TextInputPropTypes} from 'deprecated-react-native-prop-types';
 
 // if ViewPropTypes is not defined fall back to View.propType (to support RN < 0.44)
-const viewPropTypes = ViewPropTypes || View.propTypes;
+const viewPropTypes = ViewPropTypes;
 
 export default class ConfirmationCodeInput extends Component {
   static propTypes = {
@@ -21,7 +21,7 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: PropTypes.string,
     ignoreCase: PropTypes.bool,
     autoFocus: PropTypes.bool,
-    codeInputStyle: TextInput.propTypes.style,
+    codeInputStyle: TextInputPropTypes.style,
     containerStyle: viewPropTypes.style,
     onFulfill: PropTypes.func,
   };
