@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { View, TextInput, StyleSheet, Dimensions, ViewPropTypes } from 'react-native';
+import { View, TextInput, StyleSheet, Dimensions,I18nManager } from 'react-native';
 import _ from 'lodash';
+
+import { ViewPropTypes } from 'deprecated-react-native-prop-types';
 
 // if ViewPropTypes is not defined fall back to View.propType (to support RN < 0.44)
 const viewPropTypes = ViewPropTypes || View.propTypes;
@@ -22,7 +24,6 @@ export default class ConfirmationCodeInput extends Component {
     codeInputStyle: TextInput.propTypes.style,
     containerStyle: viewPropTypes.style,
     onFulfill: PropTypes.func,
-    onCodeChange: PropTypes.func,
   };
   
   static defaultProps = {
@@ -36,7 +37,7 @@ export default class ConfirmationCodeInput extends Component {
     inactiveColor: 'rgba(255, 255, 255, 0.2)',
     space: 8,
     compareWithCode: '',
-    ignoreCase: false,
+    ignoreCase: false
   };
   
   constructor(props) {
@@ -197,20 +198,13 @@ export default class ConfirmationCodeInput extends Component {
   _onKeyPress(e) {
     if (e.nativeEvent.key === 'Backspace') {
       const { currentIndex } = this.state;
-      let newCodeArr = _.clone(this.state.codeArr);
       const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-      for (const i in newCodeArr) {
-        if (i >= nextIndex) {
-          newCodeArr[i] = '';
-        }
-      }
-      this.props.onCodeChange(newCodeArr.join(''))
       this._setFocus(nextIndex);
     }
   }
   
   _onInputCode(character, index) {
-    const { codeLength, onFulfill, compareWithCode, ignoreCase, onCodeChange } = this.props;
+    const { codeLength, onFulfill, compareWithCode, ignoreCase } = this.props;
     let newCodeArr = _.clone(this.state.codeArr);
     newCodeArr[index] = character;
     
@@ -234,7 +228,7 @@ export default class ConfirmationCodeInput extends Component {
         codeArr: newCodeArr,
         currentIndex: prevState.currentIndex + 1
       };
-    }, () => { onCodeChange(newCodeArr.join('')) });
+    });
   }
   
   render() {
@@ -270,14 +264,39 @@ export default class ConfirmationCodeInput extends Component {
           underlineColorAndroid="transparent"
           selectionColor={activeColor}
           keyboardType={'name-phone-pad'}
+          textContentType={'oneTimeCode'}
           returnKeyType={'done'}
           {...this.props}
           autoFocus={autoFocus && id == 0}
           onFocus={() => this._onFocus(id)}
           value={this.state.codeArr[id] ? this.state.codeArr[id].toString() : ''}
-          onChangeText={text => this._onInputCode(text, id)}
+          onChangeText={text => {
+            console.log('textID',id)
+            console.log('text',text)
+            //text.length
+            if(text.length > 5){
+              this.props.onFulfill(text);
+
+    //           let newCodeArr = _.clone(this.state.codeArr);
+    //           for (let i = 0; i < 5; i++) {
+    //             newCodeArr[i] = text.charAt(i);
+    //           }
+    //           this._blur(codeLength - 1);
+    //           this._setFocus(codeLength - 1);
+
+    //           this.setState({
+    //     codeArr: newCodeArr,
+    //     currentIndex: codeLength - 1,
+    // });
+
+            }else if(text.length == 1){
+              let char = text.charAt(0)
+             this._onInputCode(char, id)
+            }
+            
+            }}
           onKeyPress={(e) => this._onKeyPress(e)}
-          maxLength={1}
+          maxLength={6}
         />
       )
     }
@@ -293,7 +312,7 @@ export default class ConfirmationCodeInput extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     marginTop: 20
   },
   codeInput: {
