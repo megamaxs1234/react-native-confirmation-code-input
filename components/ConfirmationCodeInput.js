@@ -274,7 +274,8 @@ export default class ConfirmationCodeInput extends Component {
             console.log('textID',id)
             console.log('text',text)
             //text.length
-            if(text.length > 5){
+           //if(text.length > 5){
+            if(text.length >= codeLength){
               this.props.onFulfill(text);
 
     //           let newCodeArr = _.clone(this.state.codeArr);
